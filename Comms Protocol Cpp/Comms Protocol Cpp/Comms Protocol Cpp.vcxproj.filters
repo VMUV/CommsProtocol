@@ -24,14 +24,14 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Motus_1_RawDataPacket.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SerializeUtilities.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="DataPacket.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Motus_1_RawDataPacket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SerializeUtilities.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
