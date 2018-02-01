@@ -24,5 +24,69 @@ namespace CommsProtocolCppTests
 			Assert::IsTrue((testVal >> 8) == littleEndian[1]);
 		}
 
+		TEST_METHOD(BufferInt16IntoByteArrayBufferOverrunTest)
+		{
+			short testVal = 0x1234;
+			vector<unsigned char> testBuff(2);
+			int i = 0;
+
+			i = SerializeUtilities::BufferInt16InToByteArray(testVal,
+				testBuff, i, Endianness::big_endian);
+			i = SerializeUtilities::BufferInt16InToByteArray(testVal,
+				testBuff, i, Endianness::big_endian);
+			i = SerializeUtilities::BufferInt16InToByteArray(testVal,
+				testBuff, i, Endianness::big_endian);
+			Assert::IsTrue(i == 2);
+
+			i = 0;
+			i = SerializeUtilities::BufferInt16InToByteArray(testVal,
+				testBuff, i, Endianness::little_endian);
+			i = SerializeUtilities::BufferInt16InToByteArray(testVal,
+				testBuff, i, Endianness::little_endian);
+			i = SerializeUtilities::BufferInt16InToByteArray(testVal,
+				testBuff, i, Endianness::little_endian);
+			Assert::IsTrue(i == 2);
+		}
+
+		TEST_METHOD(BufferInt16IntoByteArrayTest)
+		{
+			short testVal = 0x3456;
+			vector<unsigned char> testBuff(10);
+			for (int i = 0; i < testBuff.size();)
+			{
+				i = SerializeUtilities::BufferInt16InToByteArray(testVal,
+					testBuff, i, Endianness::big_endian);
+			}
+
+			for (int i = 0; i < testBuff.size();)
+			{
+				Assert::IsTrue((unsigned char)((testVal >> 8) & 0xFF) == testBuff[i++]);
+				Assert::IsTrue((unsigned char)(testVal & 0xFF) == testBuff[i++]);
+			}
+
+			for (int i = 0; i < testBuff.size();)
+			{
+				i = SerializeUtilities::BufferInt16InToByteArray(testVal,
+					testBuff, i, Endianness::little_endian);
+			}
+
+			for (int i = 0; i < testBuff.size();)
+			{
+				Assert::IsTrue((unsigned char)(testVal & 0xFF) == testBuff[i++]);
+				Assert::IsTrue((unsigned char)((testVal >> 8) & 0xFF) == testBuff[i++]);
+			}
+		}
+
+		TEST_METHOD(ConvertByteArrayToInt16IllegalByteLen)
+		{
+			vector<unsigned char> array(1);
+			short testval =
+				SerializeUtilities::ConvertByteArrayToInt16(array, Endianness::big_endian);
+			Assert::IsTrue(0 == testval);
+
+			testval =
+				SerializeUtilities::ConvertByteArrayToInt16(array, Endianness::little_endian);
+			Assert::IsTrue(0 == testval);
+		}
 	};
 }
