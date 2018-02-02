@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
-#include "SerializeUtilities.h"
+#include "../Comms Protocol Cpp/SerializeUtilities.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace Comms_Protocol_Cpp;

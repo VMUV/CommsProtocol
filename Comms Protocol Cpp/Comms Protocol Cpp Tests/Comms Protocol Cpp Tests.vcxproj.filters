@@ -29,5 +29,8 @@
     <ClCompile Include="SerializerTests.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Motus_1_RawDataPacketTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
