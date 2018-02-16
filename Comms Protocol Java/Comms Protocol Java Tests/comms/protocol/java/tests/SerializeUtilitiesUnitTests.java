@@ -1,4 +1,9 @@
+package comms.protocol.java.tests;
 import org.junit.Test;
+
+import comms.protocol.java.Endianness;
+import comms.protocol.java.SerializeUtilities;
+
 import static org.junit.Assert.assertEquals;
 
 public class SerializeUtilitiesUnitTests 
