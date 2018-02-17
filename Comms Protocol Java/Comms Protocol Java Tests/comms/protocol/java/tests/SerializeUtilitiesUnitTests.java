@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 
 public class SerializeUtilitiesUnitTests 
 {
-	//tests to ensure the (short to byte array) conversion is ordering the bytes correctly
 	@Test
     public void ConvertShortToByteArrayTestEndianness()
     {
@@ -23,8 +22,6 @@ public class SerializeUtilitiesUnitTests
         assertEquals((byte)((testVal >> 8) & 0xFF), littleEndian[1]);
     }
 	
-	//tests to ensure our try catch block for array out of bounds is working
-	//will fill the first two slots in the buffer, then terminate out of the try block for the second two attempted insertions
 	@Test
 	public void BufferShortInToByteArrayBufferOverrunTest()
 	{
@@ -49,7 +46,6 @@ public class SerializeUtilitiesUnitTests
         assertEquals(2, i);
 	}
 	
-	//Test that the (short to byte array) conversion will correctly be buffered into an array for both big and little endian formats
 	@Test
 	public void BufferShortInToByteArrayTest()
 	{
@@ -80,8 +76,6 @@ public class SerializeUtilitiesUnitTests
         }
     }
 	
-	//first, tests that the (short to byte array) conversion of the known value is valid for both big and little endian
-	//next, tests that the conversion of the big and little endian ordered byte arrays are correctly converted back to shorts by checking them against the known value
 	@Test
     public void ConvertByteArrayToShortTest()
     {
@@ -105,7 +99,6 @@ public class SerializeUtilitiesUnitTests
         assertEquals(knownVal, bigTest);
     }
 	
-	//tests that our try catch block works correctly(returns 0 for byte arrays that have the wrong size: 0 or 1)
 	@Test
     public void ConvertByteArrayToShortIllegalByteLen()
     {

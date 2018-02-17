@@ -2,7 +2,6 @@ package comms.protocol.java;
 
 public class Motus_1_RawDataPacket extends DataPacket
 {
-	//public constructor for this specialized data packet class
 	public Motus_1_RawDataPacket()
     {
         this.setPacketType(ValidPacketTypes.motus_1_raw_data_packet);
@@ -10,7 +9,6 @@ public class Motus_1_RawDataPacket extends DataPacket
         this.setPayload(new byte[0]);
     }
 	
-	//method to load a payload into our motus data packet
 	public void Serialize(byte[] payload) throws Exception
     {
         if (payload.length != this.getExpectedLen())
@@ -19,7 +17,6 @@ public class Motus_1_RawDataPacket extends DataPacket
         this.setPayload(payload);
     }
 	
-	//method to read a payload from the motus data packet
 	public short[] DeSerialize()
     {
         short[] rtn = new short[this.getExpectedLen() / 2];
@@ -39,7 +36,6 @@ public class Motus_1_RawDataPacket extends DataPacket
         return rtn;
     }
 	
-	//converts the important information from the motus data packet into a string format
 	public String ToString()
     {
         String rtn = "";

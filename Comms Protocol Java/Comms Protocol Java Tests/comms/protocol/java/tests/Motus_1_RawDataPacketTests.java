@@ -14,7 +14,6 @@ import org.junit.Rule;
 
 public class Motus_1_RawDataPacketTests 
 {
-	//checks that the packet constructor sets the type and expected length to the correct values
 	@Test
 	public void Motus_1_PacketTestConstructor()
     {
@@ -24,12 +23,9 @@ public class Motus_1_RawDataPacketTests
         assertEquals(18, packet.getExpectedLen());
     }
 	
-	//defining the exception that we are expecting the serialize 
-	//function to throw when we pass it a payload that is the wrong size
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();
 	
-	//testing that our serialize function will detect bad payloads
 	@Test
 	public void Motus_1_PacketTestSerializeInvalidPayload() throws Exception
     {
@@ -39,7 +35,6 @@ public class Motus_1_RawDataPacketTests
         packet.Serialize(invalidBytePayload);
     }
 	
-	//tests that serializing a payload does not fuck up the data being stored in any way
 	@Test
 	public void Motus_1_PacketTestSerializeBytes()
     {
@@ -65,7 +60,6 @@ public class Motus_1_RawDataPacketTests
 		} 
         catch (Exception e) 
         {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         byte[] rtnPayload = packet.getPayload();
@@ -81,8 +75,6 @@ public class Motus_1_RawDataPacketTests
             assertEquals(intPayload[i], rtnIntPayload[i]);
     }
 	
-	//tests to see that the to string method really does convert each item of the payload
-	//to a string and append them all together with commas between each item
 	@Test
 	public void TestMotus1PacketToString()
     {
@@ -104,7 +96,6 @@ public class Motus_1_RawDataPacketTests
 		} 
         catch (Exception e) 
         {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         short[] intPayload = packet.DeSerialize();
