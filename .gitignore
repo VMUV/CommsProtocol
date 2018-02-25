@@ -1,3 +1,11 @@
 /.metadata/RemoteSystemsTempFiles/
 /.metadata/
 /.recommenders/
+
+# CSharp Project
+Comms Protocol CSharp/.vs/
+Comms Protocol CSharp/TestResults/
+Comms Protocol CSharp/Comms Protocol CSharp/bin/
+Comms Protocol CSharp/Comms Protocol CSharp/obj/
+Comms Protocol CSharp/Comms Protocol CSharp Tests/bin/
+Comms Protocol CSharp/Comms Protocol CSharp Tests/obj/
