@@ -1,84 +1,108 @@
-﻿namespace Comms_Protocol_CSharp
-{
-    class DataQueue
-    {
-        private int _bufferSize;
-        private int _head = 0;
-        private int _tail = 0;
-        private byte[] _buffer;
+﻿using System.Collections.Generic;
 
-        public int Index { get; }
+namespace Comms_Protocol_CSharp
+{
+    public class DataQueue
+    {
+        private Queue<DataPacket> _fifo;
+        private int _maxSize;
 
         public DataQueue()
         {
-            _bufferSize = 1024;
-            _buffer = new byte[_bufferSize];
+            _maxSize = 64;
+            _fifo = new Queue<DataPacket>(_maxSize);
         }
 
         public DataQueue(int size)
         {
-            _bufferSize = size;
-            _buffer = new byte[_bufferSize];
+            _maxSize = size;
+            _fifo = new Queue<DataPacket>(_maxSize);
         }
 
-        public int GetBufferSpace()
+        public int MaxSize => _maxSize;
+
+        public bool IsEmpty()
         {
-            return (_bufferSize - _head);
+            return (_fifo.Count == 0);
         }
 
-        public void QueueDataPacket(DataPacket packet)
+        public bool Add(DataPacket packet)
         {
-            byte[] serial = packet.DeBuffer();
-            short len = (short)(packet.ExpectedLen + DataPacket.NumOverHeadBytes);
-            if ((serial != null) && (GetBufferSpace() > len))
+            bool rtn = _fifo.Count < _maxSize;
+            if (rtn)
+                _fifo.Enqueue(packet);
+
+            return rtn;
+        }
+
+        public DataPacket Get()
+        {
+            DataPacket rtn = new DataPacket();
+            if (_fifo.Count > 0)
             {
-                for (int i = 0; i < serial.Length; i++)
-                    _buffer[_head++] = serial[i];
+                try { rtn = _fifo.Dequeue(); }
+                catch (System.InvalidOperationException) { };
             }
+
+            return rtn;
         }
 
-        public void QueueBytes(byte[] bytes)
+        public int GetStreamable(byte[] stream, int maxSize)
         {
-            int len = bytes.Length;
-            if (GetBufferSpace() > len)
+            int numBytesQueued = 0;
+            while ((numBytesQueued < maxSize) && (_fifo.Count > 0))
             {
-                for (int i = 0; i < len; i++)
-                    _buffer[_head++] = bytes[i];
-            }
-        }
+                DataPacket packet = Get();
+                int size = packet.ExpectedLen;
+                if (size == -1)
+                    continue;
 
-        public void Flush()
-        {
-            _head = 0;
-            _tail = 0;
-        }
-
-        public byte[] GetAllBytes()
-        {
-            Flush();
-            return _buffer;
-        }
-
-        public DataPacket GetDataPacket()
-        {
-            DataPacket packet = new DataPacket();
-            if ((_head - _tail) > DataPacket.NumOverHeadBytes)
-            {
-                ValidPacketTypes type = (ValidPacketTypes)_buffer[_tail++];
-                short len = (short)_buffer[_tail++];
-                len <<= 8;
-                len |= (short)_buffer[_tail++];
-                if ((_head - _tail) >= len)
+                size += DataPacket.NumOverHeadBytes;
+                if ((maxSize - numBytesQueued) > size)
                 {
-                    byte[] payload = new byte[len];
-                    for (int i = 0; i < len; i++)
-                        payload[i] = _buffer[_tail++];
+                    stream[numBytesQueued++] = (byte)packet.Type;
+                    stream[numBytesQueued++] = (byte)((packet.ExpectedLen) >> 8);
+                    stream[numBytesQueued++] = (byte)(packet.ExpectedLen);
+                    byte[] payload = packet.Payload;
+                    for (int i = 0; i < packet.ExpectedLen; i++)
+                        stream[numBytesQueued++] = payload[i];
+                }
+                else
+                    break;
+            }
+
+            return numBytesQueued;
+        }
+
+        public void ParseStreamable(byte[] stream, int maxSize)
+        {
+            int index = 0;
+            while ((index < maxSize) && (_fifo.Count < _maxSize))
+            {
+                ValidPacketTypes type;
+                short expectedLen = 0;
+                if ((maxSize - index) > DataPacket.NumOverHeadBytes)
+                {
+                    type = (ValidPacketTypes)stream[index++];
+                    expectedLen = (short)stream[index++];
+                    expectedLen <<= 8;
+                    expectedLen |= (short)stream[index++];
+                }
+                else
+                    return;
+
+                if ((maxSize - index) > expectedLen)
+                {
+                    byte[] payload = new byte[expectedLen];
+                    for (int i = 0; i < expectedLen; i++)
+                        payload[i] = stream[index++];
+                    DataPacket packet = new DataPacket();
                     packet.Type = type;
+                    packet.ExpectedLen = expectedLen;
                     packet.Payload = payload;
+                    Add(packet);
                 }
             }
-
-            return packet;
         }
     }
 }

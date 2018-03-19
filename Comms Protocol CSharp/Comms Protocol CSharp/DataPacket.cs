@@ -4,30 +4,47 @@ namespace Comms_Protocol_CSharp
     public class DataPacket
     {
         public const short NumOverHeadBytes = 3;
-        private const int _typePos = 0;
-        private const int _lenPos1 = 1;
-        private const int _lenPos2 = 2;
-        private const int _dataStartPos = 3;
+        public const int TypePos = 0;
+        public const int LenPos1 = 1;
+        public const int LenPos2 = 2;
+        public const int DataStartPos = 3;
 
-        private byte[] _payload = new byte[0];
-        private ValidPacketTypes _type = ValidPacketTypes.end_valid_packet_types;
-        private short _expectedLen = -1;
         public byte[] Payload { get; set; }
         public ValidPacketTypes Type { get; set; }
         public short ExpectedLen { get; set; }
 
-        public byte[] DeBuffer()
+        public DataPacket()
         {
-            if (_expectedLen == -1)
-                return null;
+            Type = ValidPacketTypes.end_valid_packet_types;
+            ExpectedLen = -1;
+        }
 
-            byte[] buffer = new byte[NumOverHeadBytes + _expectedLen];
-            buffer[_typePos] = (byte)_type;
-            SerializeUtilities.BufferInt16InToByteArray(_expectedLen, buffer, 
-                _lenPos1, Endianness.big_endian);
-            for (int i = 0; i < _expectedLen; i++)
-                buffer[_dataStartPos + i] = _payload[i];
-            return buffer;
+        public DataPacket(ValidPacketTypes type, short len, byte[] payload)
+        {
+            Type = type;
+            ExpectedLen = len;
+            Payload = payload;
+        }
+
+        public int Serialize(byte[] stream, int streamOffset)
+        {
+            if ((streamOffset + NumOverHeadBytes) > stream.Length)
+                return streamOffset;
+
+            int index = streamOffset + TypePos;
+            Type = (ValidPacketTypes)stream[index++];
+            ExpectedLen = (short)stream[index++];
+            ExpectedLen <<= 8;
+            ExpectedLen |= (short)stream[index++];
+
+            if ((index + ExpectedLen) <= stream.Length)
+            {
+                Payload = new byte[ExpectedLen];
+                for (int i = 0; i < ExpectedLen; i++)
+                    Payload[i] = stream[index++];
+            }
+
+            return index;
         }
     }
 

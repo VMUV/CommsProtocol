@@ -52,6 +52,8 @@
     <Compile Include="Motus_1_RawDataPacketTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SerializeUnitTests.cs" />
+    <Compile Include="DataQueueUnitTests.cs" />
+    <Compile Include="DataPacketUnitTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
