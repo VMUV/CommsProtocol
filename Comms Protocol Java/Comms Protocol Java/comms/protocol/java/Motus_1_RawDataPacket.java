@@ -4,9 +4,7 @@ public class Motus_1_RawDataPacket extends DataPacket
 {
 	public Motus_1_RawDataPacket()
     {
-        this.setPacketType(ValidPacketTypes.motus_1_raw_data_packet);
-        this.setExpectedLen((short)18);
-        this.setPayload(new byte[0]);
+		super(ValidPacketTypes.motus_1_raw_data_packet, (short)18, new byte[0]);
     }
 	
 	public void Serialize(byte[] payload) throws Exception
