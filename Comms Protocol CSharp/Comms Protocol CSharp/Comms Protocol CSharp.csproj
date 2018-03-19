@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataPacket.cs" />
+    <Compile Include="DataQueue.cs" />
     <Compile Include="Motus_1_RawDataPacket.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SerializeUtilities.cs" />

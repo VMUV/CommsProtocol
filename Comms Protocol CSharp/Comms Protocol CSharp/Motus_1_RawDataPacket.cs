@@ -11,6 +11,30 @@ namespace Comms_Protocol_CSharp
             this.Payload = new byte[0];
         }
 
+        public Motus_1_RawDataPacket(byte[] payload)
+        {
+            this.Type = ValidPacketTypes.motus_1_raw_data_packet;
+            this.ExpectedLen = 18;
+            this.Serialize(payload);
+        }
+
+        public Motus_1_RawDataPacket(DataPacket packet)
+        {
+            if ((packet.Type != ValidPacketTypes.motus_1_raw_data_packet) ||
+                (packet.ExpectedLen != 18))
+            {
+                this.Type = ValidPacketTypes.motus_1_raw_data_packet;
+                this.ExpectedLen = 18;
+                this.Payload = new byte[0];
+            }
+            else
+            {
+                this.Type = packet.Type;
+                this.ExpectedLen = packet.ExpectedLen;
+                this.Serialize(packet.Payload);
+            }
+        }
+
         public void Serialize(byte[] payload)
         {
             if (payload.Length != this.ExpectedLen)
