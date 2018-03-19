@@ -1,6 +1,6 @@
 package comms.protocol.java;
 
-public class DataPacket implements Comparable<DataPacket>
+public class DataPacket
 {
 	public static final short NumOverHeadBytes = 3;
     public static final int TypePos = 0;
@@ -44,43 +44,6 @@ public class DataPacket implements Comparable<DataPacket>
         }
 
         return index;
-    }
-    
-    //update this method as we add more packet types to the comms protocol****
-    public int compareTo(DataPacket packet)
-    {
-    	int rtn = 0;
-    	switch(this.getPacketType())
-    	{
-	    	case motus_1_raw_data_packet:
-		    	switch(packet.getPacketType())
-		    	{
-		    		case test_packet:
-		    			rtn = 1;
-		    			break;
-		    		case motus_1_raw_data_packet:
-		    			rtn = 0;
-		    			break;
-					default:
-						break;
-		    	}
-		    	break;
-	    	case test_packet:
-	    		switch(packet.getPacketType())
-	    		{
-		    		case test_packet:
-		    			rtn = 0;
-		    			break;
-		    		case motus_1_raw_data_packet:
-		    			rtn = -1;
-		    			break;
-					default:
-						break;
-	    		}
-			default:
-				break;
-    	}
-    	return rtn;
     }
     
     public byte[] getPayload()

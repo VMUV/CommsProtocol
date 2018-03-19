@@ -41,19 +41,4 @@ public class DataPacketUnitTests
             assertEquals(packet.getPayload()[i], stream[DataPacket.DataStartPos + i]);
 	}
 	
-	@Test
-	public void DataPacket_compareTo_testOrderings()
-	{
-		//let the number of packet types(testPacket, motusPacket, etc) be the integer n
-		DataPacket testPacket = new DataPacket(ValidPacketTypes.test_packet, (short)5, new byte[] {1,2,3,4,5});
-		DataPacket motusPacket = new Motus_1_RawDataPacket();
-		
-		//there will be n^2 asserts
-		assertEquals(testPacket.compareTo(testPacket), 0);
-		assertEquals(testPacket.compareTo(motusPacket), -1);
-		assertEquals(motusPacket.compareTo(motusPacket), 0);
-		assertEquals(motusPacket.compareTo(testPacket), 1);
-		
-	}
-	
 }

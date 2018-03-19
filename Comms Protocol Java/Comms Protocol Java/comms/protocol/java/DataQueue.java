@@ -6,19 +6,19 @@ import java.util.Queue;
 
 public class DataQueue 
 {
-	private Queue<DataPacket> _fifo;
+	private SimpleQueue<DataPacket> _fifo;
     private int _maxSize;
     
     public DataQueue()
     {
         _maxSize = 64;
-        _fifo = new PriorityQueue<DataPacket>(_maxSize);
+        _fifo = new SimpleQueue<DataPacket>(_maxSize);
     }
 
     public DataQueue(int size)
     {
         _maxSize = size;
-        _fifo = new PriorityQueue<DataPacket>(_maxSize);
+        _fifo = new SimpleQueue<DataPacket>(_maxSize);
     }
     
     public int getMaxSize()
@@ -35,7 +35,7 @@ public class DataQueue
     {
         boolean rtn = _fifo.size() < _maxSize;
         if (rtn)
-            rtn = _fifo.add(packet);
+            rtn = _fifo.enqueue(packet);
 
         return rtn;
     }
@@ -45,7 +45,7 @@ public class DataQueue
         DataPacket rtn = new DataPacket();
         if (_fifo.size() > 0)
         {
-            try { rtn = _fifo.remove(); }
+            try { rtn = _fifo.dequeue(); }
             catch (NoSuchElementException e) { };
         }
 
