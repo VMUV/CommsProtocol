@@ -8,7 +8,7 @@ namespace Comms_Protocol_CSharp_Tests
     public class DataPacketUnitTests
     {
         short testPayloadLen = 0x0005;
-        byte[] streamTest = new byte[] { 0xFF, 0xAA, (byte)ValidPacketTypes.test_packet, (byte)(0x0005 >> 8),
+        byte[] streamTest = new byte[] { DataPacket.Header1, DataPacket.Header2, (byte)ValidPacketTypes.test_packet, (byte)(0x0005 >> 8),
                                     (byte)(0x0005), 0, 1, 2, 3, 4 };
         [TestMethod]
         public void DataPacket_TestConstructor()
@@ -27,7 +27,7 @@ namespace Comms_Protocol_CSharp_Tests
         }
 
         [TestMethod]
-        public void DataPacket_TestSerializeFromSteam()
+        public void DataPacket_TestSerializeFromStream()
         {
             DataPacket packet = new DataPacket();
             int index = packet.SerializeFromStream(streamTest, 0);
@@ -44,7 +44,7 @@ namespace Comms_Protocol_CSharp_Tests
             DataPacket packet = new DataPacket();
             int offset = 1;
             offset = packet.SerializeFromStream(streamTest, offset);
-            Assert.AreEqual(3, offset);
+            Assert.AreEqual(2, offset);
             Assert.AreEqual(ValidPacketTypes.end_valid_packet_types, packet.Type);
             Assert.AreEqual(-1, packet.ExpectedLen);
         }
@@ -52,7 +52,7 @@ namespace Comms_Protocol_CSharp_Tests
         [TestMethod]
         public void DataPacket_TestSerializeFromStreamBadLen()
         {
-            byte[] badLen = new byte[] { 0xFF, 0xAA, (byte)ValidPacketTypes.test_packet, (byte)(0x0005 >> 8),
+            byte[] badLen = new byte[] { DataPacket.Header1, DataPacket.Header2, (byte)ValidPacketTypes.test_packet, (byte)(0x0005 >> 8),
                                     (byte)(0x0005), 0, 1, 2, 3 };
             DataPacket packet = new DataPacket();
             int offset = 0;
@@ -65,7 +65,7 @@ namespace Comms_Protocol_CSharp_Tests
         [TestMethod]
         public void DataPacket_TestSerializeFromStreamBadType()
         {
-            byte[] badType = new byte[] { 0xFF, 0xAA, (byte)(ValidPacketTypes.end_valid_packet_types + 1), (byte)(0x0005 >> 8),
+            byte[] badType = new byte[] { DataPacket.Header1, DataPacket.Header2, (byte)(ValidPacketTypes.end_valid_packet_types + 1), (byte)(0x0005 >> 8),
                                     (byte)(0x0005), 0, 1, 2, 3, 4 };
             DataPacket packet = new DataPacket();
             int offset = 0;
@@ -90,7 +90,7 @@ namespace Comms_Protocol_CSharp_Tests
         }
 
         [TestMethod]
-        public void DataPacket_TestSerializeToStreamBadPacketType()
+        public void DataPacket_TestSerializeToStreamBadType()
         {
             byte[] stream = new byte[64];
             byte[] test = new byte[] { 0, 1, 2, 3, 4 };
@@ -102,7 +102,7 @@ namespace Comms_Protocol_CSharp_Tests
         }
 
         [TestMethod]
-        public void DataPacket_TestSerializeToStreamBadBufferOverRun()
+        public void DataPacket_TestSerializeToStreamBufferOverRun()
         {
             byte[] stream = new byte[1];
             byte[] test = new byte[] { 0, 1, 2, 3, 4 };

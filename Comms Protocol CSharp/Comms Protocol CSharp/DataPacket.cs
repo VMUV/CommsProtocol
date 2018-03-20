@@ -11,9 +11,9 @@ namespace Comms_Protocol_CSharp
         public const int LenPos1 = 3;
         public const int LenPos2 = 4;
         public const int DataStartPos = 5;
+        public const byte Header1 = 0xFE;
+        public const byte Header2 = 0x5A;
 
-        private const byte _header1 = 0xFF;
-        private const byte _header2 = 0xAA;
         private ValidPacketTypes _type;
 
         public byte[] Payload { get; set; }
@@ -52,8 +52,8 @@ namespace Comms_Protocol_CSharp
                 return streamOffset;
 
             int index = streamOffset;
-            stream[index++] = _header1;
-            stream[index++] = _header2;
+            stream[index++] = Header1;
+            stream[index++] = Header2;
             stream[index++] = (byte)Type;
             stream[index++] = (byte)(ExpectedLen >> 8);
             stream[index++] = (byte)(ExpectedLen);
@@ -70,8 +70,10 @@ namespace Comms_Protocol_CSharp
 
             int index = streamOffset + HeaderPos1;
             byte header1 = stream[index++];
+            if (Header1 != header1)
+                return index;
             byte header2 = stream[index++];
-            if (_header1 != header1 || _header2 != header2)
+            if (Header2 != header2)
                 return index;
 
             Type = (ValidPacketTypes)stream[index++];

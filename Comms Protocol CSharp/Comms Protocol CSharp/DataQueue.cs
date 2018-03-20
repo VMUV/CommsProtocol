@@ -21,6 +21,8 @@ namespace Comms_Protocol_CSharp
 
         public int MaxSize => _maxSize;
 
+        public int Count => _fifo.Count;
+
         public bool IsEmpty()
         {
             return (_fifo.Count == 0);
