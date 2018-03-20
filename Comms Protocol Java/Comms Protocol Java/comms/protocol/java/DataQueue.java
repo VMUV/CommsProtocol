@@ -26,6 +26,11 @@ public class DataQueue
     	return _maxSize;
     }
     
+    public int getSize()
+    {
+    	return _fifo.size();
+    }
+    
     public boolean IsEmpty()
     {
         return (_fifo.size() == 0);
@@ -52,31 +57,23 @@ public class DataQueue
         return rtn;
     }
     
-    public int GetStreamable(byte[] stream, int maxSize)
+    public int GetStreamable(byte[] stream)
     {
-        int numBytesQueued = 0;
-        while ((numBytesQueued < maxSize) && (_fifo.size() > 0))
+        int index = 0;
+        int maxSize = stream.length;
+        while ((index < maxSize) && (_fifo.size() > 0))
         {
             DataPacket packet = Get();
-            int size = packet.getExpectedLen();
-            if (size == -1)
-                continue;
-
-            size += DataPacket.NumOverHeadBytes;
-            if ((maxSize - numBytesQueued) > size)
-            {
-                stream[numBytesQueued++] = (byte)packet.getPacketType().getValue();
-                stream[numBytesQueued++] = (byte)((packet.getExpectedLen()) >> 8);
-                stream[numBytesQueued++] = (byte)(packet.getExpectedLen());
-                byte[] payload = packet.getPayload();
-                for (int i = 0; i < packet.getExpectedLen(); i++)
-                    stream[numBytesQueued++] = payload[i];
-            }
+            if ((index + packet.getExpectedLen() + DataPacket.NumOverHeadBytes) < maxSize)
+                index = packet.SerializeToStream(stream, index);
             else
+            {
+                Add(packet);
                 break;
+            }
         }
 
-        return numBytesQueued;
+        return index;
     }
     
     public void ParseStreamable(byte[] stream, int maxSize)
@@ -84,29 +81,16 @@ public class DataQueue
         int index = 0;
         while ((index < maxSize) && (_fifo.size() < _maxSize))
         {
-            ValidPacketTypes type;
-            short expectedLen = 0;
-            if ((maxSize - index) > DataPacket.NumOverHeadBytes)
-            {
-                type = ValidPacketTypes.values()[stream[index++]];
-                expectedLen = (short)stream[index++];
-                expectedLen <<= 8;
-                expectedLen |= (short)stream[index++];
-            }
-            else
-                return;
+            DataPacket packet = new DataPacket();
+            int newIndex = packet.SerializeFromStream(stream, index);
 
-            if ((maxSize - index) > expectedLen)
-            {
-                byte[] payload = new byte[expectedLen];
-                for (int i = 0; i < expectedLen; i++)
-                    payload[i] = stream[index++];
-                DataPacket packet = new DataPacket();
-                packet.setPacketType(type);
-                packet.setExpectedLen(expectedLen);
-                packet.setPayload(payload);
+            if (newIndex > index)
+                index = newIndex;
+            else
+                break;
+
+            if (packet.getPacketType().getValue() < ValidPacketTypes.end_valid_packet_types.getValue())
                 Add(packet);
-            }
         }
     }
 }
