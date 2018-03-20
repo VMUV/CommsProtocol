@@ -3,9 +3,7 @@ package comms.protocol.java.tests;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import comms.protocol.java.Endianness;
 import comms.protocol.java.Motus_1_RawDataPacket;
-import comms.protocol.java.SerializeUtilities;
 import comms.protocol.java.ValidPacketTypes;
 
 import static org.junit.Assert.assertEquals;
@@ -73,39 +71,5 @@ public class Motus_1_RawDataPacketTests
 
         for (int i = 0; i < rtnIntPayload.length; i++)
             assertEquals(intPayload[i], rtnIntPayload[i]);
-    }
-	
-	@Test
-	public void TestMotus1PacketToString()
-    {
-        Motus_1_RawDataPacket packet = new Motus_1_RawDataPacket();
-        byte[] payload = new byte[packet.getExpectedLen()];
-
-        int j = 0;
-        for (byte i = 0; i < packet.getExpectedLen(); i++)
-        {
-            if ((i % 2) == 0)
-                payload[i] = (byte)j++;
-            else
-                payload[i] = 0;
-        }
-
-        try 
-        {
-			packet.Serialize(payload);
-		} 
-        catch (Exception e) 
-        {
-			e.printStackTrace();
-		}
-        short[] intPayload = packet.DeSerialize();
-        String known = Short.toString(intPayload[0]);
-        for (int i = 1; i < intPayload.length; i++)
-        {
-            known += ",";
-            known += Short.toString(intPayload[i]);
-        }
-
-        assertEquals(known, packet.ToString());
     }
 }

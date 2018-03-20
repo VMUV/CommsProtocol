@@ -33,20 +33,4 @@ public class Motus_1_RawDataPacket extends DataPacket
         catch (IndexOutOfBoundsException e1) { }
         return rtn;
     }
-	
-	public String ToString()
-    {
-        String rtn = "";
-        short[] vals = this.DeSerialize();
-        if (vals.length == this.getExpectedLen() / 2)
-        {
-            rtn = Short.toString(vals[0]);
-            for (int i = 1; i < vals.length; i++)
-            {
-                rtn += ",";
-                rtn += Short.toString(vals[i]);
-            }
-        }
-        return rtn;
-    }
 }
