@@ -103,14 +103,14 @@ namespace Comms_Protocol_CSharp_Tests
             int expectedNumBytesToQueue = ((18 + DataPacket.NumOverHeadBytes) * queue.MaxSize);
 
             FillQueue(queue, packet);
-            int numBytesQueued = queue.GetStreamable(stream, stream.Length);
+            int numBytesQueued = queue.GetStreamable(stream);
             Assert.AreEqual(expectedNumBytesToQueue, numBytesQueued);
             Assert.IsTrue(queue.IsEmpty());
 
             for (int i = 0; i < numBytesQueued; )
             {
                 DataPacket rebuilt = new DataPacket();
-                i += rebuilt.Serialize(stream, i);
+                i += rebuilt.SerializeFromStream(stream, i);
                 Assert.AreEqual(packet.Type, rebuilt.Type);
                 Assert.AreEqual(packet.ExpectedLen, rebuilt.ExpectedLen);
                 for (int j = 0; j < rebuilt.ExpectedLen; j++)
@@ -126,7 +126,7 @@ namespace Comms_Protocol_CSharp_Tests
             DataQueue queue = new DataQueue();
 
             FillQueue(queue, packet);
-            int numBytesQueued = queue.GetStreamable(stream, stream.Length);
+            int numBytesQueued = queue.GetStreamable(stream);
             FillQueue(queue, packet);
 
             DataQueue queue2 = new DataQueue();

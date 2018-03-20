@@ -47,31 +47,17 @@ namespace Comms_Protocol_CSharp
             return rtn;
         }
 
-        public int GetStreamable(byte[] stream, int maxSize)
+        public int GetStreamable(byte[] stream)
         {
-            int numBytesQueued = 0;
-            while ((numBytesQueued < maxSize) && (_fifo.Count > 0))
+            int index = 0;
+            int maxSize = stream.Length;
+            while ((index < maxSize) && (_fifo.Count > 0))
             {
                 DataPacket packet = Get();
-                int size = packet.ExpectedLen;
-                if (size == -1)
-                    continue;
-
-                size += DataPacket.NumOverHeadBytes;
-                if ((maxSize - numBytesQueued) > size)
-                {
-                    stream[numBytesQueued++] = (byte)packet.Type;
-                    stream[numBytesQueued++] = (byte)((packet.ExpectedLen) >> 8);
-                    stream[numBytesQueued++] = (byte)(packet.ExpectedLen);
-                    byte[] payload = packet.Payload;
-                    for (int i = 0; i < packet.ExpectedLen; i++)
-                        stream[numBytesQueued++] = payload[i];
-                }
-                else
-                    break;
+                index = packet.SerializeToStream(stream, index);
             }
 
-            return numBytesQueued;
+            return index;
         }
 
         public void ParseStreamable(byte[] stream, int maxSize)
@@ -79,29 +65,16 @@ namespace Comms_Protocol_CSharp
             int index = 0;
             while ((index < maxSize) && (_fifo.Count < _maxSize))
             {
-                ValidPacketTypes type;
-                short expectedLen = 0;
-                if ((maxSize - index) > DataPacket.NumOverHeadBytes)
-                {
-                    type = (ValidPacketTypes)stream[index++];
-                    expectedLen = (short)stream[index++];
-                    expectedLen <<= 8;
-                    expectedLen |= (short)stream[index++];
-                }
-                else
-                    return;
+                DataPacket packet = new DataPacket();
+                int newIndex = packet.SerializeFromStream(stream, index);
 
-                if ((maxSize - index) > expectedLen)
-                {
-                    byte[] payload = new byte[expectedLen];
-                    for (int i = 0; i < expectedLen; i++)
-                        payload[i] = stream[index++];
-                    DataPacket packet = new DataPacket();
-                    packet.Type = type;
-                    packet.ExpectedLen = expectedLen;
-                    packet.Payload = payload;
+                if (newIndex > index)
+                    index = newIndex;
+                else
+                    break;
+
+                if (packet.Type < ValidPacketTypes.end_valid_packet_types)
                     Add(packet);
-                }
             }
         }
     }
