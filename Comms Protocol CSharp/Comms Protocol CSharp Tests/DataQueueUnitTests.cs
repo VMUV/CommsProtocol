@@ -121,7 +121,17 @@ namespace Comms_Protocol_CSharp_Tests
         [TestMethod]
         public void DataQueue_TestGetStreamableBufferOverflow()
         {
-            // TODO:
+            byte[] stream = new byte[1028];
+            Motus_1_RawDataPacket packet = new Motus_1_RawDataPacket(sampleMotusPayload);
+            DataQueue queue = new DataQueue();
+            int expectedNumPacketsToQueue = (stream.Length / (18 + DataPacket.NumOverHeadBytes));
+            int expectedNumBytesToQueue = (18 + DataPacket.NumOverHeadBytes) * expectedNumPacketsToQueue;
+
+            FillQueue(queue, packet);
+            int numBytesQueued = queue.GetStreamable(stream);
+            int numPacketsQueued = queue.MaxSize - queue.Count;
+            Assert.AreEqual(expectedNumBytesToQueue, numBytesQueued);
+            Assert.AreEqual(expectedNumPacketsToQueue, numPacketsQueued);
         }
 
         [TestMethod]
@@ -164,15 +174,23 @@ namespace Comms_Protocol_CSharp_Tests
             byte[] streamWithGarbage = new byte[] {0x45, 0x34, 0x00, 0x45, 0x34, 0x00,
                 DataPacket.Header1, 0x45, 0x34, 0x00, DataPacket.Header2,
                 DataPacket.Header1, DataPacket.Header2, (byte)ValidPacketTypes.test_packet, (byte)(length >> 8),
-                (byte)length, 0, 1, 2, 3, 4, 0x45, 0x34, 0x00, 0x45, 0x34, 0x00, 0x45, 0x34, 0x00 };
+                (byte)length, 0, 1, 2, 3, 4, 0x45, 0x34, 0x00, 0x45, 0x34, 0x00, 0x45, 0x34, 0x00, DataPacket.Header1, 
+                DataPacket.Header1, DataPacket.Header2, (byte)ValidPacketTypes.test_packet, (byte)(length >> 8),
+                (byte)length, 0, 1, 2, 3, 4, };
             DataQueue queue = new DataQueue();
             queue.ParseStreamable(streamWithGarbage, streamWithGarbage.Length);
-            Assert.AreEqual(1, queue.Count);
+            Assert.AreEqual(2, queue.Count);
             DataPacket packet = queue.Get();
             Assert.AreEqual(ValidPacketTypes.test_packet, packet.Type);
             Assert.AreEqual(length, packet.ExpectedLen);
             for (int i = 0; i < packet.ExpectedLen; i++)
                 Assert.AreEqual(i, packet.Payload[i]);
+            packet = queue.Get();
+            Assert.AreEqual(ValidPacketTypes.test_packet, packet.Type);
+            Assert.AreEqual(length, packet.ExpectedLen);
+            for (int i = 0; i < packet.ExpectedLen; i++)
+                Assert.AreEqual(i, packet.Payload[i]);
+            Assert.IsTrue(queue.IsEmpty());
         }
     }
 }

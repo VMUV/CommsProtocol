@@ -52,13 +52,20 @@ namespace Comms_Protocol_CSharp
                 return streamOffset;
 
             int index = streamOffset;
-            stream[index++] = Header1;
-            stream[index++] = Header2;
-            stream[index++] = (byte)Type;
-            stream[index++] = (byte)(ExpectedLen >> 8);
-            stream[index++] = (byte)(ExpectedLen);
-            for (int i = 0; i < ExpectedLen; i++)
-                stream[index++] = Payload[i];
+            try
+            {
+                stream[index++] = Header1;
+                stream[index++] = Header2;
+                stream[index++] = (byte)Type;
+                stream[index++] = (byte)(ExpectedLen >> 8);
+                stream[index++] = (byte)(ExpectedLen);
+                for (int i = 0; i < ExpectedLen; i++)
+                    stream[index++] = Payload[i];
+            }
+            catch (IndexOutOfRangeException)
+            {
+                index--;
+            }
 
             return index;
         }
@@ -74,7 +81,7 @@ namespace Comms_Protocol_CSharp
                 return index;
             byte header2 = stream[index++];
             if (Header2 != header2)
-                return index;
+                return --index;
 
             Type = (ValidPacketTypes)stream[index++];
             if (Type >= ValidPacketTypes.end_valid_packet_types)

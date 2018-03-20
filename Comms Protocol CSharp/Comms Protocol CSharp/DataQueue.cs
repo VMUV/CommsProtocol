@@ -56,7 +56,13 @@ namespace Comms_Protocol_CSharp
             while ((index < maxSize) && (_fifo.Count > 0))
             {
                 DataPacket packet = Get();
-                index = packet.SerializeToStream(stream, index);
+                if ((index + packet.ExpectedLen + DataPacket.NumOverHeadBytes) < maxSize)
+                    index = packet.SerializeToStream(stream, index);
+                else
+                {
+                    Add(packet);
+                    break;
+                }
             }
 
             return index;
