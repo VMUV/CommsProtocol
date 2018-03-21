@@ -113,19 +113,36 @@ public class DataQueueUnitTests
         int expectedNumBytesToQueue = ((18 + DataPacket.NumOverHeadBytes) * queue.getMaxSize());
 
         FillQueue(queue, packet);
-        int numBytesQueued = queue.GetStreamable(stream, stream.length);
+        int numBytesQueued = queue.GetStreamable(stream);
         assertEquals(expectedNumBytesToQueue, numBytesQueued);
         assertTrue(queue.IsEmpty());
 
         for (int i = 0; i < numBytesQueued; )
         {
             DataPacket rebuilt = new DataPacket();
-            i += rebuilt.Serialize(stream, i);
+            i += rebuilt.SerializeFromStream(stream, i);
             assertEquals(packet.getPacketType(), rebuilt.getPacketType());
             assertEquals(packet.getExpectedLen(), rebuilt.getExpectedLen());
             for (int j = 0; j < rebuilt.getExpectedLen(); j++)
                 assertEquals(packet.getPayload()[j], rebuilt.getPayload()[j]);
         }
+    }
+	
+	@Test
+	public void DataQueue_TestGetStreamableBufferOverflow() throws Exception
+    {
+        byte[] stream = new byte[1028];
+        Motus_1_RawDataPacket packet = new Motus_1_RawDataPacket();
+        packet.Serialize(sampleMotusPayload);
+        DataQueue queue = new DataQueue();
+        int expectedNumPacketsToQueue = (stream.length / (18 + DataPacket.NumOverHeadBytes));
+        int expectedNumBytesToQueue = (18 + DataPacket.NumOverHeadBytes) * expectedNumPacketsToQueue;
+
+        FillQueue(queue, packet);
+        int numBytesQueued = queue.GetStreamable(stream);
+        int numPacketsQueued = queue.getMaxSize() - queue.getSize();
+        assertEquals(expectedNumBytesToQueue, numBytesQueued);
+        assertEquals(expectedNumPacketsToQueue, numPacketsQueued);
     }
 	
 	@Test
@@ -137,7 +154,7 @@ public class DataQueueUnitTests
         DataQueue queue = new DataQueue();
 
         FillQueue(queue, packet);
-        int numBytesQueued = queue.GetStreamable(stream, stream.length);
+        int numBytesQueued = queue.GetStreamable(stream);
         FillQueue(queue, packet);
 
         DataQueue queue2 = new DataQueue();
@@ -160,5 +177,31 @@ public class DataQueueUnitTests
             for (int j = 0; j < packet2.getExpectedLen(); j++)
                 assertEquals(packet1.getPayload()[j], packet2.getPayload()[j]);
         }
+    }
+	
+	@Test
+	public void DataQueue_TestGarbageStreamParsing()
+    {
+        short length = 5;
+        byte[] streamWithGarbage = new byte[] {0x45, 0x34, 0x00, 0x45, 0x34, 0x00,
+            DataPacket.Header1, 0x45, 0x34, 0x00, DataPacket.Header2,
+            DataPacket.Header1, DataPacket.Header2, (byte)ValidPacketTypes.test_packet.getValue(), (byte)(length >> 8),
+            (byte)length, 0, 1, 2, 3, 4, 0x45, 0x34, 0x00, 0x45, 0x34, 0x00, 0x45, 0x34, 0x00, DataPacket.Header1, 
+            DataPacket.Header1, DataPacket.Header2, (byte)ValidPacketTypes.test_packet.getValue(), (byte)(length >> 8),
+            (byte)length, 0, 1, 2, 3, 4, };
+        DataQueue queue = new DataQueue();
+        queue.ParseStreamable(streamWithGarbage, streamWithGarbage.length);
+        assertEquals(2, queue.getSize());
+        DataPacket packet = queue.Get();
+        assertEquals(ValidPacketTypes.test_packet, packet.getPacketType());
+        assertEquals(length, packet.getExpectedLen());
+        for (int i = 0; i < packet.getExpectedLen(); i++)
+        	assertEquals(i, packet.getPayload()[i]);
+        packet = queue.Get();
+        assertEquals(ValidPacketTypes.test_packet, packet.getPacketType());
+        assertEquals(length, packet.getExpectedLen());
+        for (int i = 0; i < packet.getExpectedLen(); i++)
+        	assertEquals(i, packet.getPayload()[i]);
+        assertTrue(queue.IsEmpty());
     }
 }
