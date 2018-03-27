@@ -10,76 +10,80 @@ namespace Comms_Protocol_CSharp
 
         public RotationVectorRawDataPacket()
         {
-            this.Type = ValidPacketTypes.rotation_vector_raw_data_packet;
-            this.ExpectedLen = 16;
-            this.Payload = new byte[0];
+            Type = ValidPacketTypes.rotation_vector_raw_data_packet;
+            ExpectedLen = NUM_ELMTS_IN_QUAT * NUM_BYTES_IN_FLOAT;
+            Payload = new byte[ExpectedLen];
         }
 
         public RotationVectorRawDataPacket(byte[] payload)
         {
-            this.Type = ValidPacketTypes.rotation_vector_raw_data_packet;
-            this.ExpectedLen = 16;
-            this.Serialize(payload);
+            Type = ValidPacketTypes.rotation_vector_raw_data_packet;
+            ExpectedLen = NUM_ELMTS_IN_QUAT * NUM_BYTES_IN_FLOAT;
+            Serialize(payload);
         }
 
         public RotationVectorRawDataPacket(DataPacket packet)
         {
             if ((packet.Type != ValidPacketTypes.rotation_vector_raw_data_packet) ||
-                (packet.ExpectedLen != 16))
+                (packet.ExpectedLen != (NUM_ELMTS_IN_QUAT * NUM_BYTES_IN_FLOAT)))
             {
-                this.Type = ValidPacketTypes.rotation_vector_raw_data_packet;
-                this.ExpectedLen = 16;
-                this.Payload = new byte[0];
+                Type = ValidPacketTypes.rotation_vector_raw_data_packet;
+                ExpectedLen = NUM_ELMTS_IN_QUAT * NUM_BYTES_IN_FLOAT;
+                Payload = new byte[ExpectedLen];
             }
             else
             {
-                this.Type = packet.Type;
-                this.ExpectedLen = packet.ExpectedLen;
-                this.Serialize(packet.Payload);
+                Type = packet.Type;
+                ExpectedLen = packet.ExpectedLen;
+                Serialize(packet.Payload);
             }
         }
 
         public void Serialize(byte[] payload)
         {
-            if (payload.Length < 16)
-                throw new Exception();
+            if (payload.Length < ExpectedLen)
+                throw new ArgumentException();
 
-            this.Payload = payload;
+            Payload = payload;
         }
 
         public void Serialize(float[] rawSensorData)
         {
-            if (rawSensorData.Length < NUM_ELMTS_IN_QUAT)
-                throw new Exception();
-            byte[] payload = new byte[NUM_ELMTS_IN_QUAT * NUM_BYTES_IN_FLOAT];
-            int indexToInsertElement = 0;
-            for (int i = 0; i < NUM_ELMTS_IN_QUAT; i++)
-            {
-                indexToInsertElement = SerializeUtilities.BufferFloatInToByteArray(
-                    rawSensorData[i], payload, indexToInsertElement);
-            }
+            if (rawSensorData.Length != NUM_ELMTS_IN_QUAT)
+                throw new ArgumentException();
 
-            this.Payload = payload;
+            try
+            {
+                Buffer.BlockCopy(rawSensorData, 0, Payload, 0, ExpectedLen);
+            }
+            catch (Exception) { }
         }
 
         public float[] DeSerialize()
         {
             float[] rtn = new float[4];
-            int byteIndex = 0;
-            byte[] bytePayload = this.Payload;
             try
             {
-                for (int i = 0; i < rtn.Length; i++)
-                {
-                    byte[] tmp = new byte[NUM_BYTES_IN_FLOAT];
-                    tmp[0] = bytePayload[byteIndex++];
-                    tmp[1] = bytePayload[byteIndex++];
-                    tmp[2] = bytePayload[byteIndex++];
-                    tmp[3] = bytePayload[byteIndex++];
-                    rtn[i] = SerializeUtilities.ConvertByteArrayToFloat(tmp);
-                }
+                if (Payload.Length == ExpectedLen)
+                    Buffer.BlockCopy(Payload, 0, rtn, 0, ExpectedLen);
             }
             catch (Exception) { }
+            return rtn;
+        }
+
+        public override string ToString()
+        {
+            string rtn = "";
+            float[] vals = DeSerialize();
+            if (vals.Length == ExpectedLen / 4)
+            {
+                rtn = vals[0].ToString();
+                for (int i = 1; i < vals.Length; i++)
+                {
+                    rtn += ",";
+                    rtn += vals[i].ToString();
+                }
+            }
             return rtn;
         }
     }

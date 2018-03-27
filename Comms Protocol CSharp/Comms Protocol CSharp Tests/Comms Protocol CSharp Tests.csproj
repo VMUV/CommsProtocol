@@ -54,6 +54,7 @@
     <Compile Include="SerializeUnitTests.cs" />
     <Compile Include="DataQueueUnitTests.cs" />
     <Compile Include="DataPacketUnitTests.cs" />
+    <Compile Include="RotationVectorRawDataPacketTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
