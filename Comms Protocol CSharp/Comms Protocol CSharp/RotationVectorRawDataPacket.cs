@@ -71,6 +71,21 @@ namespace Comms_Protocol_CSharp
             return rtn;
         }
 
+        public RotationVector_Quat GetQuat()
+        {
+            RotationVector_Quat rtn = new RotationVector_Quat();
+            float[] vect = DeSerialize();
+            if (vect.Length == ExpectedLen / 4)
+            {
+                rtn.x = vect[0];
+                rtn.y = vect[1];
+                rtn.z = vect[2];
+                rtn.w = vect[3];
+            }
+
+            return rtn;
+        }
+
         public override string ToString()
         {
             string rtn = "";
@@ -86,5 +101,13 @@ namespace Comms_Protocol_CSharp
             }
             return rtn;
         }
+    }
+
+    public struct RotationVector_Quat
+    {
+        public float x;
+        public float y;
+        public float z;
+        public float w;
     }
 }
