@@ -107,5 +107,30 @@ namespace Comms_Protocol_CSharp_Tests
                 SerializeUtilities.ConvertByteArrayToInt16(array, Endianness.little_endian);
             Assert.AreEqual(0, testval);
         }
+
+        [TestMethod]
+        public void ConvertFloatToByteArray()
+        {
+            float f = 69.6969696f;
+            byte[] bytes = SerializeUtilities.ConvertFloatToByteArray(f);
+            Assert.AreEqual(f, SerializeUtilities.ConvertByteArrayToFloat(bytes));
+        }
+
+        [TestMethod]
+        public void BufferFloatIntoByteArray()
+        {
+            float f = 69.6969696f;
+            byte[] byteArr = new byte[8];
+
+            int offset = SerializeUtilities.BufferFloatInToByteArray(f, byteArr, 0);
+            Assert.AreEqual(4, offset);
+            offset = SerializeUtilities.BufferFloatInToByteArray(f, byteArr, offset);
+            Assert.AreEqual(8, offset);
+            Assert.AreEqual(f, SerializeUtilities.ConvertByteArrayToFloat(byteArr));
+
+            byte[] boop = new byte[4];
+            Buffer.BlockCopy(byteArr, 4, boop, 0, 4);
+            Assert.AreEqual(f, SerializeUtilities.ConvertByteArrayToFloat(boop));
+        }
     }
 }

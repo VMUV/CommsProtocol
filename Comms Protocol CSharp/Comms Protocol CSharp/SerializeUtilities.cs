@@ -58,6 +58,46 @@ namespace Comms_Protocol_CSharp
             }
             return rtn;
         }
+
+        public static byte[] ConvertFloatToByteArray(float f)
+        {
+            byte[] rtn = new byte[4];
+            float[] fArr = new float[1];
+            fArr[0] = f;
+
+            try
+            {
+                Buffer.BlockCopy(fArr, 0, rtn, 0, 4);
+            }
+            catch (Exception) { };
+
+            return rtn;
+        }
+
+        public static int BufferFloatInToByteArray(float f, byte[] array, int indexToInsertElement)
+        {
+            byte[] bytes = ConvertFloatToByteArray(f);
+            try
+            {
+                Buffer.BlockCopy(bytes, 0, array, indexToInsertElement, 4);
+                indexToInsertElement += 4;
+            }
+            catch (Exception) { }
+            return indexToInsertElement;
+        }
+
+        public static float ConvertByteArrayToFloat(byte[] array)
+        {
+            float[] fArr = new float[1];
+
+            try
+            {
+                Buffer.BlockCopy(array, 0, fArr, 0, 4);
+            }
+            catch (Exception) { };
+
+            return fArr[0];
+        }
     }
 
     public enum Endianness

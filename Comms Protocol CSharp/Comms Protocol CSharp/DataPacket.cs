@@ -111,6 +111,7 @@ namespace Comms_Protocol_CSharp
     {
         test_packet = 0,
         motus_1_raw_data_packet = 1,
+        rotation_vector_raw_data_packet = 2,
         end_valid_packet_types
     }
 }
