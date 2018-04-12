@@ -28,6 +28,11 @@ namespace Comms_Protocol_CSharp
             return (_fifo.Count == 0);
         }
 
+        public void Flush()
+        {
+            _fifo.Clear();
+        }
+
         public bool Add(DataPacket packet)
         {
             bool rtn = _fifo.Count < _maxSize;
