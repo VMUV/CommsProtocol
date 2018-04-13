@@ -192,5 +192,62 @@ namespace Comms_Protocol_CSharp_Tests
                 Assert.AreEqual(i, packet.Payload[i]);
             Assert.IsTrue(queue.IsEmpty());
         }
+
+        [TestMethod]
+        public void DataQueue_TestFlush()
+        {
+            DataQueue queue = new DataQueue();
+            Motus_1_RawDataPacket packet = new Motus_1_RawDataPacket();
+            FillQueue(queue, packet);
+            Assert.IsFalse(queue.IsEmpty());
+            Assert.AreEqual(queue.Count, queue.MaxSize);
+
+            queue.Flush();
+            Assert.IsTrue(queue.IsEmpty());
+            Assert.AreEqual(queue.Count, 0);
+        }
+
+        [TestMethod]
+        public void DataQueue_TestTransferAll()
+        {
+            DataQueue queue1 = new DataQueue();
+            Motus_1_RawDataPacket packet = new Motus_1_RawDataPacket();
+            FillQueue(queue1, packet);
+
+            DataQueue queue2 = new DataQueue();
+            queue2.TransferAll(queue1);
+            Assert.IsTrue(queue1.IsEmpty());
+            Assert.IsFalse(queue2.IsEmpty());
+            Assert.AreEqual(queue2.Count, queue2.MaxSize);
+        }
+
+        [TestMethod]
+        public void DataQueue_TestTransferAllOverFlow()
+        {
+            DataQueue queue1 = new DataQueue(128);
+            Motus_1_RawDataPacket packet = new Motus_1_RawDataPacket();
+            FillQueue(queue1, packet);
+
+            DataQueue queue2 = new DataQueue();
+            queue2.TransferAll(queue1);
+            Assert.IsFalse(queue1.IsEmpty());
+            Assert.AreEqual(queue1.Count, 64);
+            Assert.IsFalse(queue2.IsEmpty());
+            Assert.AreEqual(queue2.Count, queue2.MaxSize);
+        }
+
+        [TestMethod]
+        public void DataQueue_TestTransferAllUnderFlow()
+        {
+            DataQueue queue1 = new DataQueue();
+            Motus_1_RawDataPacket packet = new Motus_1_RawDataPacket();
+            FillQueue(queue1, packet);
+
+            DataQueue queue2 = new DataQueue(128);
+            queue2.TransferAll(queue1);
+            Assert.IsTrue(queue1.IsEmpty());
+            Assert.IsFalse(queue2.IsEmpty());
+            Assert.AreEqual(queue2.Count, queue1.MaxSize);
+        }
     }
 }
