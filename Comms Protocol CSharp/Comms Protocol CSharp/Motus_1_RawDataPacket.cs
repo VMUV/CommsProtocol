@@ -6,16 +6,16 @@ namespace Comms_Protocol_CSharp
     {
         public Motus_1_RawDataPacket()
         {
-            this.Type = ValidPacketTypes.motus_1_raw_data_packet;
-            this.ExpectedLen = 18;
-            this.Payload = new byte[0];
+            Type = ValidPacketTypes.motus_1_raw_data_packet;
+            ExpectedLen = 18;
+            Payload = new byte[ExpectedLen];
         }
 
         public Motus_1_RawDataPacket(byte[] payload)
         {
-            this.Type = ValidPacketTypes.motus_1_raw_data_packet;
-            this.ExpectedLen = 18;
-            this.Serialize(payload);
+            Type = ValidPacketTypes.motus_1_raw_data_packet;
+            ExpectedLen = 18;
+            Serialize(payload);
         }
 
         public Motus_1_RawDataPacket(DataPacket packet)
@@ -23,50 +23,55 @@ namespace Comms_Protocol_CSharp
             if ((packet.Type != ValidPacketTypes.motus_1_raw_data_packet) ||
                 (packet.ExpectedLen != 18))
             {
-                this.Type = ValidPacketTypes.motus_1_raw_data_packet;
-                this.ExpectedLen = 18;
-                this.Payload = new byte[0];
+                Type = ValidPacketTypes.motus_1_raw_data_packet;
+                ExpectedLen = 18;
+                Payload = new byte[ExpectedLen];
             }
             else
             {
-                this.Type = packet.Type;
-                this.ExpectedLen = packet.ExpectedLen;
-                this.Serialize(packet.Payload);
+                Type = packet.Type;
+                ExpectedLen = packet.ExpectedLen;
+                Serialize(packet.Payload);
             }
         }
 
         public void Serialize(byte[] payload)
         {
-            if (payload.Length != this.ExpectedLen)
+            if (payload.Length != ExpectedLen)
                 throw new ArgumentException();
 
-            this.Payload = payload;
+            Payload = payload;
+        }
+
+        public void Serialize(Int16[] payload)
+        {
+            if (payload.Length != (ExpectedLen / 2))
+                throw new ArgumentException();
+
+            try
+            {
+                Buffer.BlockCopy(payload, 0, Payload, 0, ExpectedLen);
+            }
+            catch (Exception) { }
         }
 
         public Int16[] DeSerialize()
         {
-            Int16[] rtn = new Int16[this.ExpectedLen / 2];
-            int byteIndex = 0;
-            byte[] bytePayload = this.Payload;
+            Int16[] rtn = new Int16[ExpectedLen / 2];
             try
             {
-                for (int i = 0; i < rtn.Length; i++)
-                {
-                    byte[] tmp = 
-                        new byte[] { bytePayload[byteIndex++], bytePayload[byteIndex++] };
-                    rtn[i] = 
-                        SerializeUtilities.ConvertByteArrayToInt16(tmp, Endianness.little_endian);
-                }
+                if (Payload.Length == ExpectedLen)
+                    Buffer.BlockCopy(Payload, 0, rtn, 0, ExpectedLen);
             }
-            catch (IndexOutOfRangeException) { }
+            catch (Exception) { }
             return rtn;
         }
 
         public override string ToString()
         {
             string rtn = "";
-            Int16[] vals = this.DeSerialize();
-            if (vals.Length == this.ExpectedLen / 2)
+            Int16[] vals = DeSerialize();
+            if (vals.Length == ExpectedLen / 2)
             {
                 rtn = vals[0].ToString();
                 for (int i = 1; i < vals.Length; i++)

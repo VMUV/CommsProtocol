@@ -9,10 +9,11 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Comms_Protocol_CSharp</RootNamespace>
-    <AssemblyName>Comms Protocol CSharp</AssemblyName>
+    <AssemblyName>Comms Protocol CSharp _NET_4_6_1</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
@@ -56,6 +57,7 @@
     <Compile Include="DataQueue.cs" />
     <Compile Include="Motus_1_RawDataPacket.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RotationVectorRawDataPacket.cs" />
     <Compile Include="SerializeUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
