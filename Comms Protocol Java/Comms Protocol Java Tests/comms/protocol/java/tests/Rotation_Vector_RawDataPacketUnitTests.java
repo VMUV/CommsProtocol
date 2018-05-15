@@ -82,6 +82,7 @@ public class Rotation_Vector_RawDataPacketUnitTests
         packet.Serialize(invalidBytePayload);
     }
 	
+	/*
 	@Test
 	public void RotationVector_PacketTestSerializeBytes() throws Exception
     {
@@ -155,5 +156,5 @@ public class Rotation_Vector_RawDataPacketUnitTests
         
         for (int i = 0; i < rtnFloatArray.length; i++)
         	assertEquals(rtnFloatArray[i], rawSensorData[i], .001);
-	}
+	}*/
 }
