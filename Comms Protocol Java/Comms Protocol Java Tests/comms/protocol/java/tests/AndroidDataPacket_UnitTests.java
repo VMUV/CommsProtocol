@@ -28,9 +28,9 @@ public class AndroidDataPacket_UnitTests {
 		assertEquals(20, packet1.getExpectedLen());
 
 		try {
-			AndroidDataPacket packet2 = new AndroidDataPacket(ValidPacketTypes.linear_acceleration, 3,
+			AndroidDataPacket packet2 = new AndroidDataPacket(ValidPacketTypes.linear_acceleration_raw_data_packet, 3,
 					dummyBytePayload);
-			assertEquals(ValidPacketTypes.linear_acceleration, packet2.getPacketType());
+			assertEquals(ValidPacketTypes.linear_acceleration_raw_data_packet, packet2.getPacketType());
 			assertEquals(20, packet2.getExpectedLen());
 			assertArrayEquals(dummyBytePayload, packet2.getPayload());
 		} catch (Exception e) {
@@ -59,7 +59,7 @@ public class AndroidDataPacket_UnitTests {
 		DataPacket badDataPacket = new DataPacket(badPacketType, (short) badBytePayload.length, badBytePayload);
 
 		thrown.expect(Exception.class);
-		AndroidDataPacket packet2 = new AndroidDataPacket(ValidPacketTypes.linear_acceleration, 3, badBytePayload);
+		AndroidDataPacket packet2 = new AndroidDataPacket(ValidPacketTypes.linear_acceleration_raw_data_packet, 3, badBytePayload);
 
 		thrown.expect(Exception.class);
 		AndroidDataPacket packet3 = new AndroidDataPacket(badPacketType, 3, badDataPacket);
