@@ -14,4 +14,9 @@ public class Gyro_RawDataPacket extends AndroidDataPacket {
 	public Gyro_RawDataPacket(DataPacket packet) throws Exception {
 		super(ValidPacketTypes.gyro_raw_data_packet, numberOfValues, packet);
 	}
+	
+	public XYZSensor GetAxisRotation() {
+		AndroidSensor sensor = DeSerialize();
+		return new XYZSensor(sensor.GetValues());
+	}
 }
