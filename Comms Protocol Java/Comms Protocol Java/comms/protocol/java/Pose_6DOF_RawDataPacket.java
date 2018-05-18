@@ -2,11 +2,11 @@ package comms.protocol.java;
 
 public class Pose_6DOF_RawDataPacket extends AndroidDataPacket {
 	private static int numberOfValues = 15;
-	private Quaternion totalRotation;
-	private Quaternion deltaRotation;
-	private XYZSensor totalTranslation;
-	private XYZSensor deltaTranslation;
-	private float sequenceNumber;
+	private Quaternion totalRotation = new Quaternion();
+	private Quaternion deltaRotation = new Quaternion();
+	private XYZSensor totalTranslation = new XYZSensor();
+	private XYZSensor deltaTranslation = new XYZSensor();
+	private float sequenceNumber = 0;
 
 	public Pose_6DOF_RawDataPacket() {
 		super(ValidPacketTypes.pose_6DOF_raw_data_packet, numberOfValues);
@@ -23,11 +23,13 @@ public class Pose_6DOF_RawDataPacket extends AndroidDataPacket {
 	private void UpdateValues() {
 		AndroidSensor sensor = DeSerialize();
 		float[] values = sensor.GetValues();
-		totalRotation = new Quaternion(values[0], values[1], values[2], values[3]);
-		totalTranslation = new XYZSensor(values[4], values[5], values[6]);
-		deltaRotation = new Quaternion(values[7], values[8], values[9], values[10]);
-		deltaTranslation = new XYZSensor(values[11], values[12], values[13]);
-		sequenceNumber = values[14];
+		if (values.length >= numberOfValues) {
+			totalRotation = new Quaternion(values[0], values[1], values[2], values[3]);
+			totalTranslation = new XYZSensor(values[4], values[5], values[6]);
+			deltaRotation = new Quaternion(values[7], values[8], values[9], values[10]);
+			deltaTranslation = new XYZSensor(values[11], values[12], values[13]);
+			sequenceNumber = values[14];
+		}
 	}
 
 	public Quaternion GetTotalRotation() {
@@ -39,17 +41,17 @@ public class Pose_6DOF_RawDataPacket extends AndroidDataPacket {
 		UpdateValues();
 		return totalTranslation;
 	}
-	
+
 	public Quaternion GetDeltaRotation() {
 		UpdateValues();
 		return deltaRotation;
 	}
-	
+
 	public XYZSensor GetDeltaTranslation() {
 		UpdateValues();
 		return deltaTranslation;
 	}
-	
+
 	public float GetSequenceNumber() {
 		UpdateValues();
 		return sequenceNumber;

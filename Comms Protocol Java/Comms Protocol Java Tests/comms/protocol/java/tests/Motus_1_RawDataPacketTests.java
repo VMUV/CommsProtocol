@@ -11,6 +11,8 @@ import comms.protocol.java.ValidPacketTypes;
 
 import static org.junit.Assert.assertEquals;
 
+import java.nio.ByteBuffer;
+
 import org.junit.Rule;
 
 public class Motus_1_RawDataPacketTests 
@@ -95,12 +97,10 @@ public class Motus_1_RawDataPacketTests
         	assertEquals(testBytePayload[i], rtnPayload[i]);
 
         short[] known = new short[packet.getExpectedLen() / 2];
-        int byteIndex = 0;
+        ByteBuffer buff = ByteBuffer.wrap(rtnPayload);
         for (int i = 0; i < known.length; i++)
-        {
-            byte[] tmp = new byte[] { rtnPayload[byteIndex++], rtnPayload[byteIndex++] };
-            known[i] = SerializeUtilities.ConvertByteArrayToShort(tmp, Endianness.little_endian);
-        }
+        	known[i] = buff.getShort();
+        
         for (int i = 0; i < rtnShortPayload.length; i++)
         	assertEquals(known[i], rtnShortPayload[i]);
     }

@@ -1,5 +1,7 @@
 package comms.protocol.java;
 
+import java.nio.ByteBuffer;
+
 public class Motus_1_RawDataPacket extends DataPacket {
 	public Motus_1_RawDataPacket() {
 		super(ValidPacketTypes.motus_1_raw_data_packet, (short) 18, new byte[18]);
@@ -32,30 +34,17 @@ public class Motus_1_RawDataPacket extends DataPacket {
 	public void Serialize(short[] payload) throws Exception {
 		if (payload.length != (this.getExpectedLen() / 2))
 			throw new Exception();
-
-		byte[] bytePayload = new byte[payload.length * 2];
-		try {
-			int indexToInsertElement = 0;
-			for (int i = 0; i < payload.length; i++)
-				indexToInsertElement = SerializeUtilities.BufferShortInToByteArray(payload[i], bytePayload,
-						indexToInsertElement, Endianness.little_endian);
-
-			this.setPayload(bytePayload);
-		} catch (Exception e) {
-		}
+		
+		ByteBuffer buff = ByteBuffer.wrap(this.getPayload());
+		for (int i = 0; i < payload.length; i++)
+			buff.putShort(payload[i]);
 	}
 
 	public short[] DeSerialize() {
 		short[] rtn = new short[this.getExpectedLen() / 2];
-		int byteIndex = 0;
-		byte[] bytePayload = this.getPayload();
-		try {
-			for (int i = 0; i < rtn.length; i++) {
-				byte[] tmp = new byte[] { bytePayload[byteIndex++], bytePayload[byteIndex++] };
-				rtn[i] = SerializeUtilities.ConvertByteArrayToShort(tmp, Endianness.little_endian);
-			}
-		} catch (IndexOutOfBoundsException e1) {
-		}
+		ByteBuffer buff = ByteBuffer.wrap(this.getPayload());
+		for (int i = 0; i < rtn.length; i++)
+			rtn[i] = buff.getShort();
 		return rtn;
 	}
 }
