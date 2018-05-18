@@ -15,4 +15,9 @@ public class Accelerometer_RawDataPacket extends AndroidDataPacket {
 	public Accelerometer_RawDataPacket(DataPacket packet) throws Exception {
 		super(ValidPacketTypes.accelerometer_raw_data_packet, numberOfValues, packet);
 	}
+	
+	public XYZSensor GetAccelerations() {
+		AndroidSensor sensor = DeSerialize();
+		return new XYZSensor(sensor.GetValues());
+	}
 }

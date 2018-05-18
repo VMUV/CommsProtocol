@@ -16,14 +16,8 @@ public class Rotation_Vector_RawDataPacket extends AndroidDataPacket {
 	}
 
 	public Quaternion GetQuat() {
-		Quaternion rtn = new Quaternion();
 		AndroidSensor sensor = DeSerialize();
-		float[] vals = sensor.GetValues();
-		rtn.x = vals[0];
-		rtn.y = vals[1];
-		rtn.z = vals[2];
-		rtn.w = vals[3];
-		return rtn;
+		return new Quaternion(sensor.GetValues());
 	}
 
 }

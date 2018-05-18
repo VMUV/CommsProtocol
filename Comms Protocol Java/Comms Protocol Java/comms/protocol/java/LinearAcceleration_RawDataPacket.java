@@ -15,4 +15,9 @@ public class LinearAcceleration_RawDataPacket extends AndroidDataPacket {
 	public LinearAcceleration_RawDataPacket(DataPacket packet) throws Exception {
 		super(ValidPacketTypes.linear_acceleration_raw_data_packet, numberOfValues, packet);
 	}
+	
+	public XYZSensor GetAcceleration() {
+		AndroidSensor sensor = DeSerialize();
+		return new XYZSensor(sensor.GetValues());
+	}
 }
