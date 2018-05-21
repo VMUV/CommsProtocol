@@ -55,6 +55,8 @@
     <Compile Include="DataQueueUnitTests.cs" />
     <Compile Include="DataPacketUnitTests.cs" />
     <Compile Include="RotationVectorRawDataPacketTests.cs" />
+    <Compile Include="AndroidSensorTests.cs" />
+    <Compile Include="AndroidDataPacketTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
