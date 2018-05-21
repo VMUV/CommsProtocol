@@ -65,5 +65,18 @@ namespace Comms_Protocol_CSharp
             sensor.SetBytes(this.Payload);
             return sensor;
         }
+
+        override
+        public string ToString()
+        {
+            string rtn = "";
+            AndroidSensor sensor = new AndroidSensor(numVals);
+            sensor.SetBytes(this.Payload);
+            float[] v = sensor.GetValues();
+            rtn += (sensor.GetTimeStamp().ToString() + ",");
+            for (int i = 0; i < v.Length; i++)
+                rtn += (v[i].ToString() + ",");
+            return rtn;
+        }
     }
 }
