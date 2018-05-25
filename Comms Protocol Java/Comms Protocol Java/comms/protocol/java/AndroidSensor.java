@@ -1,6 +1,7 @@
 package comms.protocol.java;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 public class AndroidSensor {
 	private float[] values;
@@ -41,6 +42,7 @@ public class AndroidSensor {
 
 	public byte[] GetBytes() {
 		ByteBuffer buffer = ByteBuffer.allocate((values.length * NUM_BYTES_PER_FLOAT) + NUM_BYTES_PER_LONG);
+		buffer.order(ByteOrder.LITTLE_ENDIAN);
 		for (int i = 0; i < values.length; i++)
 			buffer.putFloat(values[i]);
 		buffer.putLong(timeStamp);
@@ -51,6 +53,7 @@ public class AndroidSensor {
 		if (bytes.length < ((values.length * NUM_BYTES_PER_FLOAT) + NUM_BYTES_PER_LONG))
 			return;
 		ByteBuffer buffer = ByteBuffer.wrap(bytes);
+		buffer.order(ByteOrder.LITTLE_ENDIAN);
 		for (int i = 0; i < values.length; i++)
 			values[i] = buffer.getFloat();
 		timeStamp = buffer.getLong();

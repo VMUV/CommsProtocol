@@ -2,6 +2,8 @@ package comms.protocol.java.tests;
 
 import static org.junit.Assert.*;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+
 import org.junit.Test;
 import comms.protocol.java.AndroidSensor;
 
@@ -37,6 +39,7 @@ public class AndroidSensorUnitTests {
 	public void TestBytes() {
 		ByteBuffer buffer = ByteBuffer
 				.allocate((dummyVals.length * AndroidSensor.NUM_BYTES_PER_FLOAT) + AndroidSensor.NUM_BYTES_PER_LONG);
+		buffer.order(ByteOrder.LITTLE_ENDIAN);
 		for (int i = 0; i < dummyVals.length; i++)
 			buffer.putFloat(dummyVals[i]);
 		buffer.putLong(dummyTimeStamp);
