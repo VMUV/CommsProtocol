@@ -1,7 +1,7 @@
 ﻿
 namespace Comms_Protocol_CSharp
 {
-    class Pose_6DOF_RawDataPacket : AndroidDataPacket
+    public class Pose_6DOF_RawDataPacket : AndroidDataPacket
     {
         private static int numberOfVals = 15;
         private Quaternion totalRotation = new Quaternion();

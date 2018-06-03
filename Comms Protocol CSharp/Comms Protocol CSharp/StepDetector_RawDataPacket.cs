@@ -1,7 +1,7 @@
 ﻿
 namespace Comms_Protocol_CSharp
 {
-    class StepDetector_RawDataPacket : AndroidDataPacket
+    public class StepDetector_RawDataPacket : AndroidDataPacket
     {
         private static int numberOfVals = 1;
 

@@ -1,7 +1,7 @@
 ﻿
 namespace Comms_Protocol_CSharp
 {
-    class LinearAcceleration_RawDataPacket : AndroidDataPacket
+    public class LinearAcceleration_RawDataPacket : AndroidDataPacket
     {
         private static int numberOfVals = 3;
 

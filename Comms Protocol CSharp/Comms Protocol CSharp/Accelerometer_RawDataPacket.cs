@@ -1,7 +1,7 @@
 ﻿
 namespace Comms_Protocol_CSharp
 {
-    class Accelerometer_RawDataPacket : AndroidDataPacket
+    public class Accelerometer_RawDataPacket : AndroidDataPacket
     {
         private static int numberOfVals = 3;
 

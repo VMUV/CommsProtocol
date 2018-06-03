@@ -1,7 +1,7 @@
 ﻿
 namespace Comms_Protocol_CSharp
 {
-    class Gyro_RawDataPacket : AndroidDataPacket
+    public class Gyro_RawDataPacket : AndroidDataPacket
     {
         private static int numberOfVals = 3;
 
